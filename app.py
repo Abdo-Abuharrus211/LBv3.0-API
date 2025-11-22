@@ -1,3 +1,5 @@
+from http.client import responses
+
 from flask import Flask
 import os
 from supabase import create_client, Client
@@ -21,13 +23,17 @@ app.debug = True
 @app.route('/')
 def hello_world():  # put application's code here
     return 'Hello World!'
-
+@app.route('/testdb')
+def test_db_connection():
+    res = supabase_client.table("questions").select("*").execute()
+    print("retrieved")
+    print(f"res is: {res}")
+    return "Completed test"
 
 @app.route('/get-questions')
 def get_questions():
     return ""
 
-
-
 if __name__ == '__main__':
+    # This method is only for Dev environments, in Prod need a WSGI server and its config
     app.run()
