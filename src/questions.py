@@ -3,7 +3,7 @@
 """
 
 
-class Questions:
+class DbDriver:
     def __init__(self, supabase):
         self.supabase = supabase
         self.question_data = []
