@@ -8,6 +8,7 @@ class Questions:
         self.supabase = supabase
         self.question_data = []
         self.answer_data = []
+        self.selected_questions = []
 
     def get_questions_from_db(self):
         """
@@ -25,15 +26,17 @@ class Questions:
         self.question_data = response
         return "Successfully fetched questions from database."
 
-
-
     def get_question_answers_from_db(self):
         """
         Fetch the answers from the database.
 
         :return: Dictionary of the answers, keys are answer ids and values are JSON strings
         """
-        pass
+        response = (self.supabase.table("answers").select("*").execute())
+        if response is None:
+            raise Exception("Response is None: failed to retrieve data from database.")
+        self.answer_data = response
+        return "Successfully fetched answers from database."
 
     def randomize_questions(self):
         """
