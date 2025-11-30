@@ -3,6 +3,7 @@ from flask import Flask, request
 import os
 from supabase import create_client, Client
 
+from src.permitted_users import PermittedUsers
 from src.questions import DbDriver
 
 # Defining the supabase client
@@ -37,7 +38,10 @@ def get_questions():
 @app.route('/checkuser', methods=['GET'])
 def check_user():
     signee_email = request.form['email']
-    print(signee_email)
+    if signee_email is not None and not "":
+        return signee_email in PermittedUsers
+    else:
+        return "Must provide email address", 400
 
 if __name__ == '__main__':
     # This method is only for Dev environments, in Prod need a WSGI server and its config
