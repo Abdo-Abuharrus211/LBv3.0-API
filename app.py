@@ -1,6 +1,5 @@
 from http.client import responses
-
-from flask import Flask
+from flask import Flask, request
 import os
 from supabase import create_client, Client
 
@@ -34,6 +33,11 @@ def test_db_connection():
 @app.route('/get-questions')
 def get_questions():
     return ""
+
+@app.route('/checkuser', methods=['GET'])
+def check_user():
+    signee_email = request.form['email']
+    print(signee_email)
 
 if __name__ == '__main__':
     # This method is only for Dev environments, in Prod need a WSGI server and its config
