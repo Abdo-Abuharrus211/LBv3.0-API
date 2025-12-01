@@ -18,12 +18,15 @@ app = Flask(__name__)
 app.config['DEV'] = True
 app.debug = True
 
+
 # app.config['SUPABASE_CLIENT'] = supabase_client
 # TODO: set up the PROD config using WSGI server
 # TODO: test the data fetching (using postman)
 @app.route('/')
 def hello_world():  # put application's code here
     return 'Hello World!'
+
+
 @app.route('/testdb')
 def test_db_connection():
     res = supabase_client.table("questions").select("*").execute()
@@ -31,9 +34,15 @@ def test_db_connection():
     print(f"res is: {res}")
     return "Completed test"
 
+
 @app.route('/get-questions')
-def get_questions():
-    return ""
+async def get_questions():
+    res = await db_driver.question_data()
+    if res:
+        return "Questions retrieved", 200
+    else:
+        return "Error fetching questions from database!", 400
+
 
 @app.route('/checkuser', methods=['GET'])
 def check_user():
@@ -42,6 +51,7 @@ def check_user():
         return signee_email in PermittedUsers
     else:
         return "Must provide email address", 400
+
 
 if __name__ == '__main__':
     # This method is only for Dev environments, in Prod need a WSGI server and its config
