@@ -20,7 +20,11 @@ class DbDriver:
         if self.question_data:
             return self.randomize_questions()
         else:
-            self.fetch_questions_from_db()
+            try:
+                self.fetch_questions_from_db()
+            except Exception as e:
+                print(f"Error fetching questions from DB: {e}")
+                return None
             return self.randomize_questions()
 
     async def fetch_questions_from_db(self):
