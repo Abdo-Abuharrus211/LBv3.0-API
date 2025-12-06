@@ -1,6 +1,5 @@
 from http.client import responses
-# from flask import Flask, request # Changed to aioflask for async support
-from aioflask import Flask, request
+from flask import Flask, request
 import os
 from supabase import create_client, Client
 
