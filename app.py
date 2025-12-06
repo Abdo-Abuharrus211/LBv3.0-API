@@ -16,6 +16,7 @@ db_driver = DbDriver(supabase_client)
 app = Flask(__name__)
 # Dev config, change in Prod
 app.config['DEV'] = True
+app.name
 app.debug = True
 
 
@@ -44,11 +45,12 @@ async def get_questions():
         return "Error fetching questions from database!", 400
 
 
-@app.route('/checkuser', methods=['GET'])
+@app.route('/checkuser', methods=['POST'])
 def check_user():
-    signee_email = request.form['email']
+    signee_email = request.get_json()['email']
     if signee_email is not None and not "":
-        return signee_email in PermittedUsers
+        cleared = signee_email in PermittedUsers
+        return {"cleared": cleared}, 200
     else:
         return "Must provide email address", 400
 
