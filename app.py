@@ -16,7 +16,6 @@ db_driver = DbDriver(supabase_client)
 app = Flask(__name__)
 # Dev config, change in Prod
 app.config['DEV'] = True
-app.name
 app.debug = True
 
 
@@ -38,9 +37,9 @@ def test_db_connection():
 
 @app.route('/get-questions')
 async def get_questions():
-    res = await db_driver.question_data()
+    res = db_driver.get_questions()
     if res:
-        return "Questions retrieved", 200
+        return {"question_data": res}, 200
     else:
         return "Error fetching questions from database!", 400
 
