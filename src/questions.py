@@ -11,7 +11,19 @@ class DbDriver:
         self.answer_data = []
         self.selected_questions = []
 
-    async def get_questions_from_db(self):
+    def get_questions(self):
+        """
+        Get randomized questions for client, if not fetched then query DB.
+
+        :return: JSON string of the random questions and their data
+        """
+        if self.question_data:
+            return self.randomize_questions()
+        else:
+            self.fetch_questions_from_db()
+            return self.randomize_questions()
+
+    async def fetch_questions_from_db(self):
         """
         Fetch the questions from the database.
 
@@ -27,7 +39,7 @@ class DbDriver:
         self.question_data = response
         return "Successfully fetched questions from database."
 
-    async def get_question_answers_from_db(self):
+    async def fetch_question_answers_from_db(self):
         """
         Fetch the answers from the database.
 
