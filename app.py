@@ -4,7 +4,7 @@ import os
 from supabase import create_client, Client
 
 from src.permitted_users import PermittedUsers
-from src.questions import DbDriver
+from src.db_driver import DbDriver
 
 # Defining the supabase client
 # SUPABASE DOCS: https://supabase.com/docs/reference/python/rpc
