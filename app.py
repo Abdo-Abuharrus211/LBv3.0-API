@@ -35,9 +35,9 @@ def test_db_connection():
     return "Completed test"
 
 
-@app.route('/get-questions')
+@app.route('/get-questions', methods=['GET'])
 async def get_questions():
-    res = db_driver.get_questions()
+    res = await db_driver.get_questions()
     if res:
         return {"question_data": res}, 200
     else:
