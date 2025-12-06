@@ -11,7 +11,7 @@ class DbDriver:
         self.answer_data = []
         self.selected_questions = []
 
-    def get_questions(self):
+    async def get_questions(self):
         """
         Get randomized questions for client, if not fetched then query DB.
 
@@ -21,7 +21,7 @@ class DbDriver:
             return self.randomize_questions()
         else:
             try:
-                self.fetch_questions_from_db()
+                await self.fetch_questions_from_db()
             except Exception as e:
                 print(f"Error fetching questions from DB: {e}")
                 return None
@@ -38,8 +38,10 @@ class DbDriver:
             .select("*")  # TODO: change this if only need specifics
             .execute()
         )
+        print(response)
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
+        print(response)
         self.question_data = response
         return "Successfully fetched questions from database."
 
