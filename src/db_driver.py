@@ -3,13 +3,11 @@
 """
 import random
 
-
 class DbDriver:
     def __init__(self, supabase):
         self.supabase = supabase
         self.question_data = []
         self.answer_data = []
-        self.selected_questions = []
 
     def get_questions(self):
         """
@@ -41,12 +39,9 @@ class DbDriver:
             .execute()
         )
         print(f"got the response's from db: {response}")
-        data = getattr(response, "data", response)
-        if response is None or not data:
+        if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
-        print(data)
-        self.question_data = data
-        return "Successfully fetched questions from database."
+        self.question_data = getattr(response, "data", response)
 
     def fetch_question_answers_from_db(self):
         """
@@ -57,8 +52,7 @@ class DbDriver:
         response = (self.supabase.table("answers").select("*").execute())
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
-        self.answer_data = response
-        return "Successfully fetched answers from database."
+        self.answer_data = getattr(response, "data", response)
 
     def randomize_questions(self):
         """
@@ -74,6 +68,6 @@ class DbDriver:
         # if len(self.question_data) < 10:
         #     raise Exception("Not enough questions in the database to select 10 unique questions.")
         # choices = random.sample(self.question_data, 10)
-        #TODO: remove this when in prod
+        # TODO: remove this when in prod
         choices = random.sample(self.question_data, min(10, len(self.question_data)))
         return choices
