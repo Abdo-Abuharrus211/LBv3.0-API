@@ -1,5 +1,4 @@
-from http.client import responses
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import os
 from supabase import create_client, Client
 
@@ -13,10 +12,12 @@ SUPA_KEY = os.getenv("SUPA_KEY")
 supabase_client = create_client(SUPA_URL, SUPA_KEY)
 
 db_driver = DbDriver(supabase_client)
+db_driver.fetch_questions_from_db()
+# db_driver.fetch_question_answers_from_db()
 app = Flask(__name__)
 # Dev config, change in Prod
 app.config['DEV'] = True
-app.debug = True
+app.config['DEBUG'] = True
 
 
 # app.config['SUPABASE_CLIENT'] = supabase_client
@@ -30,18 +31,19 @@ def hello_world():  # put application's code here
 @app.route('/testdb')
 def test_db_connection():
     res = supabase_client.table("questions").select("*").execute()
-    print("retrieved")
-    print(f"res is: {res}")
-    return "Completed test"
+    data = getattr(res, "data", None)
+    print(f"Retrieved, res is: {data}")
+    return {"Got Data": data}, 200
 
 
 @app.route('/get-questions', methods=['GET'])
-async def get_questions():
-    res = await db_driver.get_questions()
+def get_questions():
+    res = db_driver.get_questions()
+    print(res)
     if res:
-        return {"question_data": res}, 200
+        return jsonify(res), 200
     else:
-        return "Error fetching questions from database!", 400
+        return "Error retrieving the question data!", 400
 
 
 @app.route('/checkuser', methods=['POST'])
