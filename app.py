@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import os
-from supabase import create_client, Client
+from supabase import create_client
 
 from src.permitted_users import PermittedUsers
 from src.db_driver import DbDriver
@@ -11,9 +11,7 @@ SUPA_URL = os.getenv("SUPA_URL")
 SUPA_KEY = os.getenv("SUPA_KEY")
 supabase_client = create_client(SUPA_URL, SUPA_KEY)
 
-db_driver = DbDriver(supabase_client)
-db_driver.fetch_questions_from_db()
-# db_driver.fetch_question_answers_from_db()
+DB_DRIVER = DbDriver(supabase_client)
 app = Flask(__name__)
 # Dev config, change in Prod
 app.config['DEV'] = True
@@ -31,17 +29,14 @@ def hello_world():  # put application's code here
 @app.route('/testdb')
 def test_db_connection():
     res = supabase_client.table("questions").select("*").execute()
-    data = getattr(res, "data", None)
-    print(f"Retrieved, res is: {data}")
-    return {"Got Data": data}, 200
+    return {"Got Data": res}, 200
 
 
 @app.route('/get-questions', methods=['GET'])
 def get_questions():
-    res = db_driver.get_questions()
-    print(res)
-    if res:
-        return jsonify(res), 200
+    q_data = DB_DRIVER.get_questions()
+    if q_data:
+        return jsonify(q_data), 200
     else:
         return "Error retrieving the question data!", 400
 
