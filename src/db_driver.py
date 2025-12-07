@@ -11,21 +11,25 @@ class DbDriver:
         self.answer_data = []
         self.selected_questions = []
 
-    async def get_questions(self):
+    def get_questions(self):
         """
         Get randomized questions for client, if not fetched then query DB.
 
         :return: JSON string of the random questions and their data
         """
-        if self.question_data:
-            return self.randomize_questions()
+        print(self.question_data)
+        if self.selected_questions:
+            print("returning some random stuff")
+            return self.selected_questions
         else:
-            try:
-                await self.fetch_questions_from_db()
-            except Exception as e:
-                print(f"Error fetching questions from DB: {e}")
-                return None
             return self.randomize_questions()
+            try:
+                # print("trying to fetch from db")
+                # await self.fetch_questions_from_db()
+                return self.randomize_questions()
+            except Exception as e:
+                # print(f"Error fetching questions from DB: {e}")
+                return None
 
     async def fetch_questions_from_db(self):
         """
@@ -38,11 +42,12 @@ class DbDriver:
             .select("*")  # TODO: change this if only need specifics
             .execute()
         )
-        print(response)
-        if response is None:
+        print(f"got the response's from db: {response}")
+        data = getattr(response, "data", response)
+        if response is None or not data:
             raise Exception("Response is None: failed to retrieve data from database.")
-        print(response)
-        self.question_data = response
+        print(data)
+        self.question_data = data
         return "Successfully fetched questions from database."
 
     async def fetch_question_answers_from_db(self):
@@ -68,5 +73,8 @@ class DbDriver:
         2. Do random.choice on that set
         3. Remove from the set
         """
-        choices = random.sample(self.question_data, 10)
+        # if len(self.question_data) < 10:
+        #     raise Exception("Not enough questions in the database to select 10 unique questions.")
+        # choices = random.sample(self.question_data, 10)
+        choices = random.sample(self.question_data, min(10, len(self.question_data)))
         return choices
