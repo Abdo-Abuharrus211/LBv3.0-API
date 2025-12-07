@@ -17,27 +17,25 @@ class DbDriver:
 
         :return: JSON string of the random questions and their data
         """
-        print(self.question_data)
-        if self.selected_questions:
+        if self.question_data:
             print("returning some random stuff")
-            return self.selected_questions
-        else:
             return self.randomize_questions()
+        else:
             try:
-                # print("trying to fetch from db")
-                # await self.fetch_questions_from_db()
+                print("trying to fetch from db")
+                self.fetch_questions_from_db()
                 return self.randomize_questions()
             except Exception as e:
-                # print(f"Error fetching questions from DB: {e}")
+                print(f"Error fetching questions from DB: {e}")
                 return None
 
-    async def fetch_questions_from_db(self):
+    def fetch_questions_from_db(self):
         """
         Fetch the questions from the database.
 
         :return: Dictionary of the questions, keys are question ids and values are JSON strings
         """
-        response = await (
+        response = (
             self.supabase.table("questions")
             .select("*")  # TODO: change this if only need specifics
             .execute()
@@ -50,13 +48,13 @@ class DbDriver:
         self.question_data = data
         return "Successfully fetched questions from database."
 
-    async def fetch_question_answers_from_db(self):
+    def fetch_question_answers_from_db(self):
         """
         Fetch the answers from the database.
 
         :return: Dictionary of the answers, keys are answer ids and values are JSON strings
         """
-        response = await (self.supabase.table("answers").select("*").execute())
+        response = (self.supabase.table("answers").select("*").execute())
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.answer_data = response
@@ -76,5 +74,6 @@ class DbDriver:
         # if len(self.question_data) < 10:
         #     raise Exception("Not enough questions in the database to select 10 unique questions.")
         # choices = random.sample(self.question_data, 10)
+        #TODO: remove this when in prod
         choices = random.sample(self.question_data, min(10, len(self.question_data)))
         return choices
