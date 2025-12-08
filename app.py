@@ -1,10 +1,9 @@
-from http.client import responses
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import os
-from supabase import create_client, Client
+from supabase import create_client
 
 from src.permitted_users import PermittedUsers
-from src.questions import DbDriver
+from src.db_driver import DbDriver
 
 # Defining the supabase client
 # SUPABASE DOCS: https://supabase.com/docs/reference/python/rpc
@@ -12,11 +11,11 @@ SUPA_URL = os.getenv("SUPA_URL")
 SUPA_KEY = os.getenv("SUPA_KEY")
 supabase_client = create_client(SUPA_URL, SUPA_KEY)
 
-db_driver = DbDriver(supabase_client)
+DB_DRIVER = DbDriver(supabase_client)
 app = Flask(__name__)
 # Dev config, change in Prod
 app.config['DEV'] = True
-app.debug = True
+app.config['DEBUG'] = True
 
 
 # app.config['SUPABASE_CLIENT'] = supabase_client
@@ -30,25 +29,24 @@ def hello_world():  # put application's code here
 @app.route('/testdb')
 def test_db_connection():
     res = supabase_client.table("questions").select("*").execute()
-    print("retrieved")
-    print(f"res is: {res}")
-    return "Completed test"
+    return {"Got Data": res}, 200
 
 
-@app.route('/get-questions')
-async def get_questions():
-    res = await db_driver.question_data()
-    if res:
-        return "Questions retrieved", 200
+@app.route('/get-questions', methods=['GET'])
+def get_questions():
+    q_data = DB_DRIVER.get_questions()
+    if q_data:
+        return jsonify(q_data), 200
     else:
-        return "Error fetching questions from database!", 400
+        return "Error retrieving the question data!", 400
 
 
-@app.route('/checkuser', methods=['GET'])
+@app.route('/checkuser', methods=['POST'])
 def check_user():
-    signee_email = request.form['email']
+    signee_email = request.get_json()['email']
     if signee_email is not None and not "":
-        return signee_email in PermittedUsers
+        cleared = signee_email in PermittedUsers
+        return {"cleared": cleared}, 200
     else:
         return "Must provide email address", 400
 
