@@ -51,6 +51,11 @@ def check_user():
         return "Must provide email address", 400
 
 
+@app.route('/answers', methods=['GET'])
+def answers():
+    return "nothing yet", 200
+
+
 if __name__ == '__main__':
     # This method is only for Dev environments, in Prod need a WSGI server and its config
     app.run()
