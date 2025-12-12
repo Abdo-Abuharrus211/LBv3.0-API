@@ -51,9 +51,18 @@ def check_user():
         return "Must provide email address", 400
 
 
-@app.route('/answers', methods=['GET'])
-def answers():
-    return "nothing yet", 200
+@app.route('/get-answers', methods=['GET'])
+def get_answers():
+    q_ids = request.get_json()['ids']
+    print(q_ids)
+    if q_ids is not None and len(q_ids) > 0:
+        a_data = DB_DRIVER.get_answers(q_ids)
+        print(a_data)
+        if a_data:
+            return jsonify(a_data), 200
+        else:
+            return "Error retrieving the answer data!", 400
+    return {"Bad request": None}, 400
 
 
 if __name__ == '__main__':
