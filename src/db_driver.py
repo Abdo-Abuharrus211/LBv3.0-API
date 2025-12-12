@@ -28,6 +28,23 @@ class DbDriver:
                 print(f"Error fetching questions from DB: {e}")
                 return None
 
+    def get_answers(self, q_ids):
+        """
+        Retrieve the answers for the given question IDs.
+        :param q_ids: list of integers representing question IDs
+        :return: The answer data if found, else None
+        """
+        if self.answer_data:
+            return self.find_answer_by_id(q_ids)
+        else:
+            try:
+                print("getting answers from db")
+                self.fetch_question_answers_from_db()
+                return self.find_answer_by_id(q_ids)
+            except Exception as e:
+                print(f"Error fetching answers from DB: {e}")
+                return None
+
     def fetch_questions_from_db(self):
         """
         Fetch the questions from the database.
