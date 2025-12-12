@@ -90,18 +90,17 @@ class DbDriver:
         choices = random.sample(self.question_data, min(10, len(self.question_data)))
         return choices
 
-    def find_answer_by_id(self, answer_ids: list):
+    def find_answer_by_id(self, q_ids: list):
         """
-        Find every question's answer by its ID.
+        Find answer objects with correlating Question IDs.
 
-        :param answer_ids: A list of question IDs to find answers for
+        :param q_ids: A list of question IDs to find answers for
         :return: The answer data if found, else None
         """
-        if not self.answer_data:
-            self.fetch_question_answers_from_db()
-
-        # TODO:  Finish this later, I need to get answers to all the questions randomly selected
-        for answer, i in enumerate(answer_ids):
-            if self.answer_data[answer]["id"] == i:
-                return self.answer_data[answer]
-        return None
+        answers = []
+        # TODO:  Optimize this search, something more elegant than nested loops...
+        for q in q_ids:
+            for j, answer in enumerate(self.answer_data):
+                if answer['question'] == q:
+                    answers.append(answer)
+        return answers
