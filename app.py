@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
 from supabase import create_client
 
@@ -13,10 +14,10 @@ supabase_client = create_client(SUPA_URL, SUPA_KEY)
 
 DB_DRIVER = DbDriver(supabase_client)
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 # Dev config, change in Prod
 app.config['DEV'] = True
 app.config['DEBUG'] = True
-
 
 # app.config['SUPABASE_CLIENT'] = supabase_client
 # TODO: set up the PROD config using WSGI server
