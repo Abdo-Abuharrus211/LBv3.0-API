@@ -52,7 +52,7 @@ def check_user():
         return "Must provide email address", 400
 
 
-@app.route('/get-answers', methods=['GET'])
+@app.route('/get-answers', methods=['POST'])
 def get_answers():
     q_ids = request.get_json()['ids']
     print(q_ids)
