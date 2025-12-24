@@ -43,7 +43,7 @@ Pygments==2.18.0
 PyJWT==2.10.1
 python-dotenv==1.0.0
 realtime==2.25.0
-requests==2.32.3
+requests==2.32.4
 rich==13.7.1
 storage3==2.25.0
 StrEnum==0.4.15
