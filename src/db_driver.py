@@ -56,7 +56,7 @@ class DbDriver:
             .select("*")  # TODO: change this if only need specifics
             .execute()
         )
-        print(f"got the response's from db: {response}")
+        print(f"got the response's from db")
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.question_data = getattr(response, "data", response)
