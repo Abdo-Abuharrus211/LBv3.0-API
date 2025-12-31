@@ -87,7 +87,7 @@ class DbDriver:
         #     raise Exception("Not enough questions in the database to select 10 unique questions.")
         # choices = random.sample(self.question_data, 10)
         # TODO: remove this when in prod
-        choices = random.sample(self.question_data, min(10, len(self.question_data)))
+        choices = random.sample(self.question_data, min(15, len(self.question_data)))
         return choices
 
     def find_answer_by_id(self, q_ids: list):
