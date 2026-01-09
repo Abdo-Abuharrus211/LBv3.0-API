@@ -53,7 +53,7 @@ class DbDriver:
         """
         response = (
             self.supabase.table("questions")
-            .select("*")  # TODO: change this if only need specifics
+            .select("*")
             .execute()
         )
         print(f"got the response's from db")
