@@ -83,10 +83,6 @@ class DbDriver:
         2. Do random.choice on that set
         3. Remove from the set
         """
-        # if len(self.question_data) < 10:
-        #     raise Exception("Not enough questions in the database to select 10 unique questions.")
-        # choices = random.sample(self.question_data, 10)
-        # TODO: remove this when in prod
         choices = random.sample(self.question_data, min(10, len(self.question_data)))
         return choices
 
