@@ -14,14 +14,12 @@ supabase_client = create_client(SUPA_URL, SUPA_KEY)
 
 DB_DRIVER = DbDriver(supabase_client)
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 # Dev config, change in Prod
 app.config['DEV'] = True
 app.config['DEBUG'] = True
 
-# app.config['SUPABASE_CLIENT'] = supabase_client
 # TODO: set up the PROD config using WSGI server
-# TODO: test the data fetching (using postman)
 @app.route('/')
 def hello_world():  # put application's code here
     return 'Hello World!'
@@ -68,4 +66,4 @@ def get_answers():
 
 if __name__ == '__main__':
     # This method is only for Dev environments, in Prod need a WSGI server and its config
-    app.run()
+    app.run(debug=False, port=5000)
