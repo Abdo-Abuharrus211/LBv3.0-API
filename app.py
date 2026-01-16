@@ -66,4 +66,4 @@ def get_answers():
 
 if __name__ == '__main__':
     # This method is only for Dev environments, in Prod need a WSGI server and its config
-    app.run(debug=False, port=5000)
+    app.run(debug=False,host="0.0.0.0", port=8000)
