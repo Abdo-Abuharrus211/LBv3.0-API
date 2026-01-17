@@ -11,15 +11,16 @@ from src.db_driver import DbDriver
 SUPA_URL = os.getenv("SUPA_URL")
 SUPA_KEY = os.getenv("SUPA_KEY")
 supabase_client = create_client(SUPA_URL, SUPA_KEY)
-
 DB_DRIVER = DbDriver(supabase_client)
+
 app = Flask(__name__)
-# TODO: change this to the Prod client origins
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-# Dev config, change in Prod
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['DEV'] = False
 app.config['PROD'] = not app.config['DEV']
 app.config['DEBUG'] = False
+
+# TODO: change this to the Prod client origins
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 @app.route('/')
 def we_are_live():
