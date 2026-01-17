@@ -9,4 +9,4 @@ COPY . .
 #RUN useradd --create-home appuser
 #USER appuser
 EXPOSE 8000
-CMD ["gunincorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
