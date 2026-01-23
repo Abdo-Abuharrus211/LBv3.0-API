@@ -11,18 +11,20 @@ from src.db_driver import DbDriver
 SUPA_URL = os.getenv("SUPA_URL")
 SUPA_KEY = os.getenv("SUPA_KEY")
 supabase_client = create_client(SUPA_URL, SUPA_KEY)
-
 DB_DRIVER = DbDriver(supabase_client)
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-# Dev config, change in Prod
-app.config['DEV'] = True
-app.config['DEBUG'] = True
 
-# TODO: set up the PROD config using WSGI server
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+app.config['DEV'] = False
+app.config['PROD'] = not app.config['DEV']
+app.config['DEBUG'] = False
+
+# TODO: change this to the Prod client origins
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
 @app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
+def we_are_live():
+    return 'If you see this, then the Flask server is up and running!', 200
 
 
 @app.route('/testdb')
@@ -63,7 +65,6 @@ def get_answers():
             return "Error retrieving the answer data!", 400
     return {"Bad request": None}, 400
 
-
 if __name__ == '__main__':
-    # This method is only for Dev environments, in Prod need a WSGI server and its config
-    app.run(debug=False,host="0.0.0.0", port=8000)
+    # App is run using Gunicorn in Prod, by running: gunicorn -w 4 app:app
+    app.run(host="0.0.0.0", port=8000)
