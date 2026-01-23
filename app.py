@@ -6,6 +6,7 @@ from supabase import create_client
 from src.permitted_users import PermittedUsers
 from src.db_driver import DbDriver
 
+CLIENT_ORIGIN = os.getenv("CLIENT_ORIGIN")
 # Defining the supabase client
 # SUPABASE DOCS: https://supabase.com/docs/reference/python/rpc
 SUPA_URL = os.getenv("SUPA_URL")
@@ -19,8 +20,7 @@ app.config['DEV'] = False
 app.config['PROD'] = not app.config['DEV']
 app.config['DEBUG'] = False
 
-# TODO: change this to the Prod client origins
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": CLIENT_ORIGIN}}, supports_credentials=True)
 
 @app.route('/')
 def we_are_live():
