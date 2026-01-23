@@ -83,7 +83,7 @@ class DbDriver:
         2. Do random.choice on that set
         3. Remove from the set
         """
-        choices = random.sample(self.question_data, min(10, len(self.question_data)))
+        choices = random.sample(self.question_data, min(15, len(self.question_data)))
         return choices
 
     def find_answer_by_id(self, q_ids: list):
