@@ -1,7 +1,7 @@
 [project]
 name = "lbv3-0-api"
 version = "0.1.0"
-description = "Add your description here"
+description = "API server for LBV3.0"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
@@ -48,7 +48,6 @@ dependencies = [
     "pycparser==2.23",
     "pydantic==2.12.5",
     "pydantic-core==2.41.5",
-    "pygame==2.6.1",
     "pygments==2.18.0",
     "pyjwt==2.10.1",
     "python-dotenv==1.0.0",
