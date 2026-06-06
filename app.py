@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
-from supabase import create_client
+from flask_sqlalchemy import SQLAlchemy
 
 from src.permitted_users import PermittedUsers
 from src.db_driver import DbDriver
@@ -9,17 +9,27 @@ from src.db_driver import DbDriver
 CLIENT_ORIGIN = os.getenv("CLIENT_ORIGIN")
 # Defining the supabase client
 # SUPABASE DOCS: https://supabase.com/docs/reference/python/rpc
-SUPA_URL = os.getenv("SUPA_URL")
-SUPA_KEY = os.getenv("SUPA_KEY")
-supabase_client = create_client(SUPA_URL, SUPA_KEY)
-DB_DRIVER = DbDriver(supabase_client)
+# SUPA_URL = os.getenv("SUPA_URL")
+# SUPA_KEY = os.getenv("SUPA_KEY")
+# supabase_client = create_client(SUPA_URL, SUPA_KEY)
 
+DB_URI = os.getenv("DB_URL")
+DB_PORT = os.getenv("DB_PORT")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+database = SQLAlchemy()
+
+# define flask config
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+# this saves memory and resources
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEV'] = False
 app.config['PROD'] = not app.config['DEV']
 app.config['DEBUG'] = False
 
+DB_DRIVER = DbDriver(database)
+database.init_app(app)
 CORS(app, resources={r"/*": {"origins": CLIENT_ORIGIN}}, supports_credentials=True)
 
 @app.route('/')
