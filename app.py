@@ -8,22 +8,21 @@ from src.db_driver import DbDriver
 
 CLIENT_ORIGIN = os.getenv("CLIENT_ORIGIN")
 DB_URI = os.getenv("DB_URL")
-DB_PORT = os.getenv("DB_PORT")
+DB_PORT = int(os.getenv("DB_PORT", 8000))
+DB_NAME = os.getenv("DB_NAME", "lbv3")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 database = psycopg2.connect(
     host=DB_URI,
     port=DB_PORT,
+    name=DB_NAME,
     user=DB_USER,
     password=DB_PASSWORD
 )
 db_cursor = database.cursor()
 # define flask config
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
-# this saves memory and resources
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEV'] = False
 app.config['PROD'] = not app.config['DEV']
 app.config['DEBUG'] = False
@@ -34,7 +33,6 @@ CORS(app, resources={r"/*": {"origins": CLIENT_ORIGIN}}, supports_credentials=Tr
 @app.route('/')
 def we_are_live():
     return 'If you see this, then the Flask server is up and running!', 200
-
 
 @app.route('/testdb')
 def test_db_connection():
