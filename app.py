@@ -1,3 +1,5 @@
+from os import name
+
 import psycopg2
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -16,7 +18,8 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 database = psycopg2.connect(
     host=DB_URI,
     port=DB_PORT,
-    name=DB_NAME,
+    dbname=DB_NAME,
+    database=DB_NAME,
     user=DB_USER,
     password=DB_PASSWORD
 )
