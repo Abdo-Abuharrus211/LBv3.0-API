@@ -9,14 +9,14 @@ from src.permitted_users import PermittedUsers
 from src.db_driver import DbDriver
 
 CLIENT_ORIGIN = os.getenv("CLIENT_ORIGIN")
-DB_URI = os.getenv("DB_URL")
+DB_URL = os.getenv("DB_URL")
 DB_PORT = int(os.getenv("DB_PORT", 8000))
 DB_NAME = os.getenv("DB_NAME", "lbv3")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 database = psycopg2.connect(
-    host=DB_URI,
+    host=DB_URL,
     port=DB_PORT,
     dbname=DB_NAME,
     user=DB_USER,
