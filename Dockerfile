@@ -1,12 +1,16 @@
 FROM python:3.13-slim
-LABEL authors="ABDULQADIR ABUHARRUS"
-WORKDIR /usr/src/app
-COPY requirements.txt .
 
-RUN python -m pip install --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /usr/src/app
+
+RUN pip install uv
+
+COPY pyproject.toml .
+COPY uv.lock .
+
 COPY . .
-#RUN useradd --create-home appuser
-#USER appuser
+
+# Install only project dependencies
+RUN uv sync --no-dev
+
 EXPOSE 8000
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
+CMD ["uv", "run", "gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
