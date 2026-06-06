@@ -3,10 +3,9 @@
 """
 import random
 
-
 class DbDriver:
-    def __init__(self, supabase):
-        self.supabase = supabase
+    def __init__(self, db):
+        self.db = db
         self.question_data = []
         self.answer_data = []
 
@@ -51,11 +50,10 @@ class DbDriver:
 
         :return: Dictionary of the questions, keys are question ids and values are JSON strings
         """
-        response = (
-            self.supabase.table("questions")
-            .select("*")
-            .execute()
-        )
+        cursor = self.db.cursor()
+        cursor.execute("SELECT * FROM questions")
+        response = cursor.fetchall()
+
         print(f"got the response's from db")
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
@@ -67,7 +65,9 @@ class DbDriver:
 
         :return: Dictionary of the answers, keys are answer ids and values are JSON strings
         """
-        response = (self.supabase.table("answers").select("*").execute())
+        cursor = self.db.cursor()
+        cursor.execute("SELECT * FROM answers")
+        response = cursor.fetchall()
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.answer_data = getattr(response, "data", response)
