@@ -19,7 +19,6 @@ database = psycopg2.connect(
     host=DB_URI,
     port=DB_PORT,
     dbname=DB_NAME,
-    database=DB_NAME,
     user=DB_USER,
     password=DB_PASSWORD
 )
