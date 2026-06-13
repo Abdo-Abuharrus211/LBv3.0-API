@@ -1,7 +1,5 @@
-from os import name
-
 import psycopg2
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 import os
 
@@ -15,22 +13,49 @@ DB_NAME = os.getenv("DB_NAME", "lbv3")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-database = psycopg2.connect(
-    host=DB_URL,
-    port=DB_PORT,
-    dbname=DB_NAME,
-    user=DB_USER,
-    password=DB_PASSWORD
-)
-db_cursor = database.cursor()
+# database = psycopg2.connect(
+#     host=DB_URL,
+#     port=DB_PORT,
+#     dbname=DB_NAME,
+#     user=DB_USER,
+#     password=DB_PASSWORD
+# )
+# db_cursor = database.cursor()
+
 # define flask config
 app = Flask(__name__)
 app.config['DEV'] = False
 app.config['PROD'] = not app.config['DEV']
 app.config['DEBUG'] = False
 
-DB_DRIVER = DbDriver(database)
+DB_DRIVER = DbDriver(database) # TODO: refactor the driver class, no longer needs instance as field
 CORS(app, resources={r"/*": {"origins": CLIENT_ORIGIN}}, supports_credentials=True)
+
+
+def get_db():
+    """
+    Retrieve the db connection stored in the Flask context or create it if DNE
+    :return: psycopg2.connection instance to the PostgreSQL database
+    """
+    if not g.db:
+        g.db = psycopg2.connect(
+        host=DB_URL,
+        port=DB_PORT,
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD
+    )
+    return g.db
+
+@app.teardown_appcontext
+def tear_down_db():
+    """
+    Close the db connection when app shutdown
+    :return:
+    """
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
 
 @app.route('/')
 def we_are_live():
@@ -38,6 +63,8 @@ def we_are_live():
 
 @app.route('/testdb')
 def test_db_connection():
+    db_con = get_db()
+    db_cursor = db_con.cursor()
     db_cursor.execute('SELECT * FROM questions')
     res = db_cursor.fetchall()
     return {"Got Data": res}, 200
