@@ -28,7 +28,7 @@ app.config['DEV'] = False
 app.config['PROD'] = not app.config['DEV']
 app.config['DEBUG'] = False
 
-DB_DRIVER = DbDriver() # TODO: refactor the driver class, no longer needs instance as field
+DB_DRIVER = DbDriver()
 CORS(app, resources={r"/*": {"origins": CLIENT_ORIGIN}}, supports_credentials=True)
 
 
