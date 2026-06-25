@@ -54,7 +54,7 @@ class DbDriver:
         db_cursor.execute("SELECT * FROM questions")
         response = db_cursor.fetchall()
 
-        print(f"got the response's from db")
+        print(f"Fetched questions from DB: {response}")
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.question_data = getattr(response, "data", response)
@@ -65,12 +65,11 @@ class DbDriver:
 
         :return: Dictionary of the answers, keys are answer ids and values are JSON strings
         """
-        cursor = db_cursor.cursor()
-        cursor.execute("SELECT * FROM answers")
-        response = cursor.fetchall()
+        db_cursor.execute("SELECT * FROM answers")
+        response = db_cursor.fetchall()
+        print(f"Fetched answers from DB: {response}")
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
-        # TODO: add a log here to see the structure of the data, where's the tuple..?
         self.answer_data = getattr(response, "data", response)
 
     def randomize_questions(self):
