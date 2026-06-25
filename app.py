@@ -40,13 +40,14 @@ def get_db():
     """
     if 'db' not in g:
         g.db = psycopg2.connect(
-        host=DB_URL,
-        port=DB_PORT,
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD
-    )
+            host=DB_URL,
+            port=DB_PORT,
+            dbname=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
+        )
     return g.db
+
 
 # this decorator manages tearing down connections after requests finish
 @app.teardown_appcontext
@@ -59,9 +60,11 @@ def tear_down_db(exception=None):
     if db is not None:
         db.close()
 
+
 @app.route('/')
 def we_are_live():
     return 'If you see this, then the Flask server is up and running!', 200
+
 
 @app.route('/testdb')
 def test_db_connection():
@@ -76,17 +79,21 @@ def test_db_connection():
 def get_questions():
     db_con = get_db()
     db_cursor = db_con.cursor(cursor_factory=DictCursor)
-    q_data = DB_DRIVER.get_questions(db_cursor)
-    if q_data:
-        return jsonify(q_data), 200
-    else:
-        return "Error retrieving the question data!", 400
+    try:
+        q_data = DB_DRIVER.get_questions(db_cursor)
+        if q_data:
+            return jsonify(q_data), 200
+        else:
+            return "Error retrieving the question data!", 500
+    except Exception as e:
+        app.logger.error(e)
+        return f"Error retrieving the question data!", 500
 
 
 @app.route('/checkuser', methods=['POST'])
 def check_user():
-    signee_email = request.get_json()['email']
-    if signee_email is not None and not "":
+    signee_email = request.get_json(silent=True)
+    if signee_email is not (None or "") and "email" in signee_email:
         cleared = signee_email in PermittedUsers
         return {"cleared": cleared}, 200
     else:
@@ -96,17 +103,22 @@ def check_user():
 @app.route('/get-answers', methods=['POST'])
 def get_answers():
     db_con = get_db()
-    q_ids = request.get_json()['ids']
-    print(q_ids)
-    if q_ids is not None and len(q_ids) > 0:
-        db_cursor = db_con.cursor(cursor_factory=DictCursor)
-        a_data = DB_DRIVER.get_answers(q_ids, db_cursor)
-        print(a_data)
-        if a_data:
-            return jsonify(a_data), 200
-        else:
-            return "Error retrieving the answer data!", 400
+    q_ids = request.get_json(silent=True)
+    print(f"Question IDs: {q_ids}")
+    if q_ids is not None and "ids" in q_ids:
+        try:
+            db_cursor = db_con.cursor(cursor_factory=DictCursor)
+            a_data = DB_DRIVER.get_answers(q_ids["ids"], db_cursor)
+            print(f"Answer data: {a_data}")
+            if a_data:
+                return jsonify(a_data), 200
+            else:
+                return "Error parsing the answer data!", 500
+        except Exception as e:
+            app.logger.error(e)
+            return f"Error retrieving the answer data!", 500
     return {"Bad request": None}, 400
+
 
 if __name__ == '__main__':
     # App is run using Gunicorn in Prod, by running: gunicorn -w 4 app:app
