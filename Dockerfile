@@ -5,6 +5,7 @@ WORKDIR /usr/src/app
 RUN pip install uv
 # tell uv to use the image's Python not its own
 ENV UV_SYSTEM_PYTHON=1
+ENV PYTHONUNBUFFERED=1
 COPY pyproject.toml uv.lock ./
 RUN uv sync --no-dev
 
