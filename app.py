@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2.extras import DictCursor
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 import os
@@ -65,7 +66,7 @@ def we_are_live():
 @app.route('/testdb')
 def test_db_connection():
     db_con = get_db()
-    db_cursor = db_con.cursor()
+    db_cursor = db_con.cursor(cursor_factory=DictCursor)
     db_cursor.execute('SELECT * FROM questions')
     res = db_cursor.fetchall()
     return {"Got Data": res}, 200
@@ -74,7 +75,8 @@ def test_db_connection():
 @app.route('/get-questions', methods=['GET'])
 def get_questions():
     db_con = get_db()
-    q_data = DB_DRIVER.get_questions(db_con)
+    db_cursor = db_con.cursor(cursor_factory=DictCursor)
+    q_data = DB_DRIVER.get_questions(db_cursor)
     if q_data:
         return jsonify(q_data), 200
     else:
@@ -97,7 +99,8 @@ def get_answers():
     q_ids = request.get_json()['ids']
     print(q_ids)
     if q_ids is not None and len(q_ids) > 0:
-        a_data = DB_DRIVER.get_answers(q_ids, db_con)
+        db_cursor = db_con.cursor(cursor_factory=DictCursor)
+        a_data = DB_DRIVER.get_answers(q_ids, db_cursor)
         print(a_data)
         if a_data:
             return jsonify(a_data), 200
