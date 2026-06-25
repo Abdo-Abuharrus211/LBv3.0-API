@@ -72,7 +72,9 @@ def test_db_connection():
 
 @app.route('/get-questions', methods=['GET'])
 def get_questions():
-    q_data = DB_DRIVER.get_questions()
+    db_con = get_db()
+    q_data = DB_DRIVER.get_questions(db_con)
+    tear_down_db()
     if q_data:
         return jsonify(q_data), 200
     else:
@@ -91,15 +93,18 @@ def check_user():
 
 @app.route('/get-answers', methods=['POST'])
 def get_answers():
+    db_con = get_db()
     q_ids = request.get_json()['ids']
     print(q_ids)
     if q_ids is not None and len(q_ids) > 0:
-        a_data = DB_DRIVER.get_answers(q_ids)
+        a_data = DB_DRIVER.get_answers(q_ids, db_con)
         print(a_data)
+        tear_down_db()
         if a_data:
             return jsonify(a_data), 200
         else:
             return "Error retrieving the answer data!", 400
+    tear_down_db()
     return {"Bad request": None}, 400
 
 if __name__ == '__main__':
