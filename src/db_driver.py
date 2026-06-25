@@ -8,7 +8,7 @@ class DbDriver:
         self.question_data = []
         self.answer_data = []
 
-    def get_questions(self, db_con):
+    def get_questions(self, db_cursor):
         """
         Get randomized questions for client, if not fetched then query DB.
 
@@ -20,17 +20,17 @@ class DbDriver:
         else:
             try:
                 print("trying to fetch from db")
-                self.fetch_questions_from_db(db_con)
+                self.fetch_questions_from_db(db_cursor)
                 return self.randomize_questions()
             except Exception as e:
                 print(f"Error fetching questions from DB: {e}")
                 return None
 
-    def get_answers(self, q_ids, db_con):
+    def get_answers(self, q_ids, db_cursor):
         """
         Retrieve the answers for the given question IDs.
         :param q_ids: list of integers representing question IDs
-        :param db_con: database connection
+        :param db_cursor: database connection
         :return: The answer data if found, else None
         """
         if self.answer_data:
@@ -38,39 +38,39 @@ class DbDriver:
         else:
             try:
                 print("getting answers from db")
-                self.fetch_question_answers_from_db(db_con)
+                self.fetch_question_answers_from_db(db_cursor)
                 return self.find_answer_by_id(q_ids)
             except Exception as e:
                 print(f"Error fetching answers from DB: {e}")
                 return None
 
-    def fetch_questions_from_db(self, db_con):
+    def fetch_questions_from_db(self, db_cursor):
         """
         Fetch the questions from the database.
 
-        :param db_con: database connection
+        :param db_cursor: database connection
         :return: Dictionary of the questions, keys are question ids and values are JSON strings
         """
-        cursor = db_con.cursor()
-        cursor.execute("SELECT * FROM questions")
-        response = cursor.fetchall()
+        db_cursor.execute("SELECT * FROM questions")
+        response = db_cursor.fetchall()
 
         print(f"got the response's from db")
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.question_data = getattr(response, "data", response)
 
-    def fetch_question_answers_from_db(self, db_con):
+    def fetch_question_answers_from_db(self, db_cursor):
         """
         Fetch the answers from the database.
 
         :return: Dictionary of the answers, keys are answer ids and values are JSON strings
         """
-        cursor = db_con.cursor()
+        cursor = db_cursor.cursor()
         cursor.execute("SELECT * FROM answers")
         response = cursor.fetchall()
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
+        # TODO: add a log here to see the structure of the data, where's the tuple..?
         self.answer_data = getattr(response, "data", response)
 
     def randomize_questions(self):
