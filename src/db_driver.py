@@ -2,6 +2,9 @@
     This class conducts operations for all the questions.
 """
 import random
+import logging
+
+logger = logging.getLogger(__name__)
 
 class DbDriver:
     def __init__(self):
@@ -15,15 +18,15 @@ class DbDriver:
         :return: JSON string of the random questions and their data
         """
         if self.question_data:
-            print("returning some random stuff")
+            logger.info("returning some random stuff")
             return self.randomize_questions()
         else:
             try:
-                print("trying to fetch from db")
+                logger.info("trying to fetch from db")
                 self.fetch_questions_from_db(db_cursor)
                 return self.randomize_questions()
             except Exception as e:
-                print(f"Error fetching questions from DB: {e}")
+                logger.error(f"Error fetching questions from DB: {e}")
                 return None
 
     def get_answers(self, q_ids, db_cursor):
@@ -37,11 +40,11 @@ class DbDriver:
             return self.find_answer_by_id(q_ids)
         else:
             try:
-                print("getting answers from db")
+                logger.info("getting answers from db")
                 self.fetch_question_answers_from_db(db_cursor)
                 return self.find_answer_by_id(q_ids)
             except Exception as e:
-                print(f"Error fetching answers from DB: {e}")
+                logger.error(f"Error fetching answers from DB: {e}")
                 return None
 
     def fetch_questions_from_db(self, db_cursor):
@@ -54,7 +57,7 @@ class DbDriver:
         db_cursor.execute("SELECT * FROM questions")
         response = db_cursor.fetchall()
 
-        print(f"Fetched questions from DB: {response}")
+        logger.info(f"Fetched questions from DB: {response}")
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.question_data = getattr(response, "data", response)
@@ -67,7 +70,7 @@ class DbDriver:
         """
         db_cursor.execute("SELECT * FROM answers")
         response = db_cursor.fetchall()
-        print(f"Fetched answers from DB: {response}")
+        logger.info(f"Fetched answers from DB: {response}")
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.answer_data = getattr(response, "data", response)

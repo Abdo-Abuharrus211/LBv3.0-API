@@ -104,12 +104,12 @@ def check_user():
 def get_answers():
     db_con = get_db()
     q_ids = request.get_json(silent=True)
-    print(f"Question IDs: {q_ids}")
+    app.logger.info(f"Question IDs: {q_ids}")
     if q_ids is not None and "ids" in q_ids:
         try:
             db_cursor = db_con.cursor(cursor_factory=DictCursor)
             a_data = DB_DRIVER.get_answers(q_ids["ids"], db_cursor)
-            print(f"Answer data: {a_data}")
+            app.logger.info(f"Answer data: {a_data}")
             if a_data:
                 return jsonify(a_data), 200
             else:
