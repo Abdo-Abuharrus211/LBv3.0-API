@@ -58,6 +58,7 @@ class DbDriver:
         response = db_cursor.fetchall()
 
         logger.info(f"Fetched questions from DB: {response}")
+        print(f"Fetched questions from DB: {response}")
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.question_data = getattr(response, "data", response)
@@ -71,6 +72,7 @@ class DbDriver:
         db_cursor.execute("SELECT * FROM answers")
         response = db_cursor.fetchall()
         logger.info(f"Fetched answers from DB: {response}")
+        print(f"Fetched answers from DB: {response}")
         if response is None:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.answer_data = getattr(response, "data", response)
@@ -102,4 +104,5 @@ class DbDriver:
             for j, answer in enumerate(self.answer_data):
                 if answer['question'] == q:
                     answers.append(answer)
+        print(f"Answers by IDL: {answers}")
         return answers
