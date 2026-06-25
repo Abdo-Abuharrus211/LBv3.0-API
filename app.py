@@ -37,7 +37,7 @@ def get_db():
     Retrieve the db connection stored in the Flask context or create it if DNE
     :return: psycopg2.connection instance to the PostgreSQL database
     """
-    if not g.db:
+    if 'db' not in g:
         g.db = psycopg2.connect(
         host=DB_URL,
         port=DB_PORT,
@@ -47,8 +47,9 @@ def get_db():
     )
     return g.db
 
+# this decorator manages tearing down connections after requests finish
 @app.teardown_appcontext
-def tear_down_db():
+def tear_down_db(exception=None):
     """
     Close the db connection when app shutdown
     :return:
@@ -74,7 +75,6 @@ def test_db_connection():
 def get_questions():
     db_con = get_db()
     q_data = DB_DRIVER.get_questions(db_con)
-    tear_down_db()
     if q_data:
         return jsonify(q_data), 200
     else:
@@ -99,12 +99,10 @@ def get_answers():
     if q_ids is not None and len(q_ids) > 0:
         a_data = DB_DRIVER.get_answers(q_ids, db_con)
         print(a_data)
-        tear_down_db()
         if a_data:
             return jsonify(a_data), 200
         else:
             return "Error retrieving the answer data!", 400
-    tear_down_db()
     return {"Bad request": None}, 400
 
 if __name__ == '__main__':
