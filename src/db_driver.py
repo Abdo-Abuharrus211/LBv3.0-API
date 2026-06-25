@@ -4,8 +4,7 @@
 import random
 
 class DbDriver:
-    def __init__(self, db):
-        self.db = db
+    def __init__(self):
         self.question_data = []
         self.answer_data = []
 
