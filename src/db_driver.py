@@ -41,7 +41,7 @@ class DbDriver:
         else:
             try:
                 logger.info("getting answers from db")
-                self.fetch_question_answers_from_db(db_cursor)
+                self.fetch_answers_from_db(db_cursor)
                 return self.find_answer_by_id(q_ids)
             except Exception as e:
                 logger.error(f"Error fetching answers from DB: {e}")
@@ -63,7 +63,7 @@ class DbDriver:
             raise Exception("Response is None: failed to retrieve data from database.")
         self.question_data = getattr(response, "data", response)
 
-    def fetch_question_answers_from_db(self, db_cursor):
+    def fetch_answers_from_db(self, db_cursor):
         """
         Fetch the answers from the database.
 
