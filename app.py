@@ -92,12 +92,12 @@ def get_questions():
 
 @app.route('/checkuser', methods=['POST'])
 def check_user():
-    signee_email = request.get_json(silent=True)
-    if signee_email is not (None or "") and "email" in signee_email:
-        cleared = signee_email in PermittedUsers
-        return {"cleared": cleared}, 200
-    else:
+    data = request.get_json(silent=True)
+    if not data or "email" not in data:
         return "Must provide email address", 400
+    signee_email = data["email"]
+    cleared = signee_email in PermittedUsers
+    return {"cleared": cleared}, 200
 
 
 @app.route('/get-answers', methods=['POST'])
